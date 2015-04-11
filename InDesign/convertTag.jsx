@@ -47,7 +47,7 @@
         for (tag in characterStyles) {
           cStyleName = characterStyles[tag];
           style = app.activeDocument.characterStyles.item(cStyleName);
-          convertTag(story, tag, style, "paragraph");
+          convertTag(story, tag, style, "character");
         }
       }
       resetFindChangeGrep();
@@ -56,7 +56,8 @@
 
   convertTag = function(story, tag, style, kind) {
     var changeTo, foundItem, foundItems, foundTags, str, _i, _j, _len, _len1;
-    app.findGrepPreferences.findWhat = "<" + tag + ">(.*)?<\/" + tag + ">";
+    resetFindChangeGrep();
+    app.findGrepPreferences.findWhat = "<" + tag + ">(.*?)<\/" + tag + ">";
     foundItems = story.findGrep();
     if (foundItems.length !== 0) {
       foundTags = [];
@@ -72,7 +73,7 @@
         } else {
           app.changeTextPreferences.appliedCharacterStyle = style;
         }
-        changeTo = str.match(RegExp("<" + tag + ">(.*)?<\\/" + tag + ">"))[1];
+        changeTo = str.match(RegExp("<" + tag + ">(.*?)<\\/" + tag + ">"))[1];
         app.changeTextPreferences.changeTo = changeTo;
         story.changeText();
       }
@@ -100,7 +101,8 @@
 
   resetFindChangeGrep = function() {
     app.findGrepPreferences = NothingEnum.nothing;
-    return app.changeGrepPreferences = NothingEnum.nothing;
+    app.changeGrepPreferences = NothingEnum.nothing;
+    return app.changeTextPreferences = NothingEnum.nothing;
   };
 
   errorMsg = function(str) {

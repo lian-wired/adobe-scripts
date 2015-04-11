@@ -44,15 +44,16 @@ main = ->
       # 文字スタイル適用
       for tag, cStyleName of characterStyles
         style = app.activeDocument.characterStyles.item(cStyleName)
-        convertTag(story, tag, style, "paragraph")
+        convertTag(story, tag, style, "character")
 
     resetFindChangeGrep()
   return
 
 # タグを変換
 convertTag = (story, tag, style, kind) ->
+  resetFindChangeGrep()
   # 正規表現で検索
-  app.findGrepPreferences.findWhat = "<#{tag}>(.*)?<\/#{tag}>"
+  app.findGrepPreferences.findWhat = "<#{tag}>(.*?)<\/#{tag}>"
   foundItems = story.findGrep()
 
   if foundItems.length != 0
@@ -66,7 +67,7 @@ convertTag = (story, tag, style, kind) ->
       else
         app.changeTextPreferences.appliedCharacterStyle = style
       # タグ部分を削除
-      changeTo = str.match(///<#{tag}>(.*)?<\/#{tag}>///)[1]
+      changeTo = str.match(///<#{tag}>(.*?)<\/#{tag}>///)[1]
       app.changeTextPreferences.changeTo = changeTo
       story.changeText()
   return
@@ -90,6 +91,7 @@ deleteNonExistStyle = (styles, kind) ->
 resetFindChangeGrep = ->
   app.findGrepPreferences = NothingEnum.nothing
   app.changeGrepPreferences = NothingEnum.nothing
+  app.changeTextPreferences = NothingEnum.nothing
 
 # エラー表示
 errorMsg = (str) ->
